@@ -1,10 +1,5 @@
-use std::path::PathBuf;
-use std::process::Command;
-
-use dirs::home_dir;
-
-mod config_model;
-use config_model::{Config, Profile};
+use chgpf::config_model::Config;
+use chgpf::{change_profile, get_config_path};
 
 fn main() {
     let input_profile = "home";
@@ -20,28 +15,4 @@ fn main() {
     change_profile(profile);
 
     println!("Changed git profile: {}", &profile.email);
-}
-
-fn get_config_path() -> PathBuf {
-    let home = home_dir().expect("failed to get your home directory");
-
-    home.join(".config").join("gprof").join("profiles")
-}
-
-fn change_profile(profile: &Profile) {
-    Command::new("git")
-        .arg("config")
-        .arg("--global")
-        .arg("user.email")
-        .arg(&profile.email)
-        .status()
-        .unwrap();
-
-    Command::new("git")
-        .arg("config")
-        .arg("--global")
-        .arg("user.name")
-        .arg(&profile.name)
-        .status()
-        .unwrap();
 }
