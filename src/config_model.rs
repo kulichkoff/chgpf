@@ -19,9 +19,8 @@ impl Config {
     where
         P: AsRef<Path>,
     {
-        // TODO more info on errors
-        let conf_toml = fs::read_to_string(p).map_err(|_| "failed to read config")?;
-        let config: Config = toml::from_str(&conf_toml).map_err(|_| "failed to parse config")?;
+        let conf_toml = fs::read_to_string(p).map_err(|e| e.to_string())?;
+        let config: Config = toml::from_str(&conf_toml).map_err(|e| e.to_string())?;
         Ok(config)
     }
 }
