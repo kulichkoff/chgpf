@@ -15,6 +15,7 @@ fn main() {
         Ok(conf) => conf,
         Err(err) => {
             log::error!("Failed to load config: {}", err);
+            eprintln!("Failed to find load config. Ensure you have created it");
             exit(1);
         }
     };
