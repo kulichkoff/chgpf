@@ -2,6 +2,12 @@
 name = "chgpf"
 version = "0.1.0"
 edition = "2021"
+description = "A simple command-line tool to change Git profiles"
+authors = ["Daniel Kulichkov <danchick03@gmail.com>"]
+license = "MIT"
+repository = "https://github.com/kulichkoff/chgpf"
+keywords = ["git", "profile", "command-line"]
+categories = ["command-line-utilities"]
 
 [dependencies]
 dirs = "5.0.1"
