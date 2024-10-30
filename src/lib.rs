@@ -1,7 +1,8 @@
 pub mod config_model;
 
+use std::env;
 use std::path::PathBuf;
-use std::process::Command;
+use std::process::{exit, Command};
 
 use config_model::Profile;
 
@@ -26,4 +27,15 @@ pub fn change_profile(profile: &Profile) {
 pub fn get_config_path() -> PathBuf {
     let home = dirs::home_dir().expect("failed to get your home directory");
     home.join(".config").join("gprof").join("profiles")
+}
+
+pub fn get_profile_argument() -> String {
+    let args: Vec<String> = env::args().collect();
+    
+    if args.len() != 2 {
+        println!("Usage: chgpf [profile_name]");
+        exit(1);
+    }
+    
+    args[1].clone()
 }
