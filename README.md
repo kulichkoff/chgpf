@@ -18,11 +18,10 @@ A simple command-line tool to change Git profiles with ease.
 
 ## Installation
 
-To install `chgpf`, you can use *Releases* page or clone the repo and then
-install with `cargo`:
+To install `chgpf`, you can check *Releases* page or just install with `cargo`:
 
 ```bash
-cargo install chgpf
+cargo install chgpf --git https://github.com/kulichkoff/chgpf
 ```
 
 ## Usage
