@@ -9,12 +9,17 @@ repository = "https://github.com/kulichkoff/chgpf"
 keywords = ["git", "profile", "command-line"]
 categories = ["command-line-utilities"]
 
+[profile.release]
+lto = true
+opt-level = "s"
+panic = "abort"
+
 [dependencies]
-dirs = "5.0.1"
-env_logger = "0.11.5"
-log = "0.4.22"
-serde = { version = "1.0", features = ["derive"] }
-toml = "0.8.19"
+dirs = { version = "5.0.1", default-features = false }
+env_logger = { version = "0.11.5", default-features = false }
+log = { version = "0.4.22", default-features = false }
+serde = { version = "1.0", default-features = false, features = ["derive"] }
+toml = { version = "0.8.19", default-features = false, features = ["parse"] }
 
 [dev-dependencies]
 tempfile = "3"
