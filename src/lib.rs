@@ -26,7 +26,7 @@ pub fn change_profile(profile: &Profile) {
 
 pub fn get_config_path() -> PathBuf {
     let home = dirs::home_dir().expect("failed to get your home directory");
-    home.join(".config").join("gprof").join("profiles")
+    home.join(".config").join("chgpf").join("profiles")
 }
 
 pub fn get_profile_argument() -> String {
