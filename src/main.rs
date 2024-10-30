@@ -1,4 +1,3 @@
-use std::env;
 use std::process::exit;
 
 use chgpf::config_model::Config;
