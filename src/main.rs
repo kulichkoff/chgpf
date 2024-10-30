@@ -18,10 +18,13 @@ fn main() {
         }
     };
 
-    let profile = config
-        .profiles
-        .get(&input_profile)
-        .expect("failed to find profile");
+    let profile = match config.profiles.get(&input_profile) {
+        Some(prof) => prof,
+        None => {
+            log::error!("Profile {} not found", &input_profile);
+            exit(1);
+        },
+    };
 
     change_profile(profile);
 
