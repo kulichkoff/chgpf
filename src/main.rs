@@ -5,16 +5,12 @@ use chgpf::config_model::Config;
 use chgpf::{change_profile, get_profile_argument};
 
 fn main() {
-    env_logger::init();
-    log::info!("Application started");
-
     let input_profile = get_profile_argument();
 
     let config_path = profiles_path();
     let config = match Config::from_file(config_path) {
         Ok(conf) => conf,
-        Err(err) => {
-            log::error!("Failed to load config: {}", err);
+        Err(_) => {
             exit(1);
         }
     };
@@ -22,7 +18,6 @@ fn main() {
     let profile = match config.profiles.get(&input_profile) {
         Some(prof) => prof,
         None => {
-            log::error!("Profile {} not found", &input_profile);
             exit(1);
         },
     };

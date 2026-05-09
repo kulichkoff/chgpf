@@ -8,25 +8,23 @@ use std::process::{exit, Command};
 use config_model::Profile;
 
 pub fn change_profile(profile: &Profile) {
-    if let Err(err) = Command::new("git")
+    if let Err(_) = Command::new("git")
         .arg("config")
         .arg("--global")
         .arg("user.email")
         .arg(&profile.email)
         .status()
     {
-        log::error!("Failed to execute git command: {}", err);
         exit(1);
     }
 
-    if let Err(err) = Command::new("git")
+    if let Err(_) = Command::new("git")
         .arg("config")
         .arg("--global")
         .arg("user.name")
         .arg(&profile.name)
         .status()
     {
-        log::error!("Failed to execute git command: {}", err);
         exit(1);
     }
 }
