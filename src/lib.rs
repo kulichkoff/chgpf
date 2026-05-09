@@ -1,11 +1,10 @@
-pub mod config_model;
 pub mod app;
 pub mod config;
 
 use std::env;
 use std::process::{exit, Command};
 
-use config_model::Profile;
+use config::Profile;
 
 pub fn change_profile(profile: &Profile) {
     if let Err(_) = Command::new("git")

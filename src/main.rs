@@ -1,7 +1,7 @@
 use std::process::exit;
 
 use chgpf::config::profiles_path;
-use chgpf::config_model::Config;
+use chgpf::config::Config;
 use chgpf::{change_profile, get_profile_argument};
 
 fn main() {
