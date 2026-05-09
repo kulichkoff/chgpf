@@ -1,24 +1,26 @@
 # chgpf
 
-A simple command-line tool to change Git profiles with ease.
+A simple command-line tool to change Git profiles with ease. Chgpf changes your global Git config by the settings you configured. It helps you with switching between several git accounts you may have.
+
+![showcase](docs/assets/chgpf_showcase.gif)
 
 ## Table of Contents
 
-- [Features](#features)
+- [Short Explanation](<README#Short Explanation>)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Configuration](#configuration)
 - [License](#license)
 
-## Features
+## Short Explanation
 
-- Switch between multiple Git profiles in a single command.
-- Easy configuration and setup.
-- Lightweight and fast.
+First of all, you define a config with profile aliases. You can define fields to be changed by `chgpf`. Those aliases are used to switch between Git configurations.
+
+`chgpf` DOES NOT persist your Git configuration state. But it also does nothing critical or dangerous. It only helps you switching between profiles in a single command.
 
 ## Installation
 
-To install `chgpf`, you can check *Releases* page or just install with `cargo`:
+To install `chgpf`, you can check *Releases* page here or just install with `cargo`:
 
 ```bash
 cargo install chgpf --git https://github.com/kulichkoff/chgpf
@@ -26,16 +28,23 @@ cargo install chgpf --git https://github.com/kulichkoff/chgpf
 
 ## Usage
 
+You can run `chgpf` to switch between Git profiles
+
 ```bash
+# Syntax
 chgpf <profile_name>
 ```
 
-Replace `<profile_name>` with the name of the profile you want to switch to.
+```bash
+# Examples
+chgpf home
+chgpf work
+```
 
 ## Configuration
 
 Create a configuration file in your home directory to define your Git
-profiles. In Unix systems it should be `~/.config/chgpf/profiles`.
+profiles. For Linux and macOS it is `~/.config/chgpf/profiles`.
 
 ```toml
 [profile_name]
