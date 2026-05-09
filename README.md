@@ -1,6 +1,6 @@
 # chgpf
 
-A simple command-line tool to change Git profiles with ease. Chgpf changes your global Git config by the settings you configured. It helps you with switching between several git accounts you may have.
+It is a thin wrapper around Git config, a simple command-line tool to change Git profiles with ease. Chgpf changes your global Git config by the settings you configured. It helps you with switching between several git accounts you may have.
 
 ![showcase](docs/assets/chgpf_showcase.gif)
 
