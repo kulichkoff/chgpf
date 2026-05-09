@@ -1,4 +1,5 @@
 use crate::app;
+use std::ops::{Deref, DerefMut};
 use std::path::PathBuf;
 use std::{collections::HashMap, fs, path::Path};
 
@@ -11,19 +12,27 @@ pub struct Profile {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Config {
-    #[serde(flatten)]
-    pub profiles: HashMap<String, Profile>,
+pub struct Profiles(HashMap<String, Profile>);
+
+impl Profiles {
+    pub fn from_file<P: AsRef<Path>>(p: P) -> Result<Profiles, String> {
+        let conf_toml = fs::read_to_string(p).map_err(|e| e.to_string())?;
+        let config: Profiles = toml::from_str(&conf_toml).map_err(|e| e.to_string())?;
+        Ok(config)
+    }
 }
 
-impl Config {
-    pub fn from_file<P>(p: P) -> Result<Config, String>
-    where
-        P: AsRef<Path>,
-    {
-        let conf_toml = fs::read_to_string(p).map_err(|e| e.to_string())?;
-        let config: Config = toml::from_str(&conf_toml).map_err(|e| e.to_string())?;
-        Ok(config)
+impl Deref for Profiles {
+    type Target = HashMap<String, Profile>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl DerefMut for Profiles {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
     }
 }
 
@@ -49,11 +58,11 @@ mod tests {
         temp_file.write_all(toml_data.as_bytes()).unwrap();
 
         let temp_path = temp_file.path();
-        let config = Config::from_file(temp_path).unwrap();
+        let config = Profiles::from_file(temp_path).unwrap();
 
-        assert_eq!(config.profiles.len(), 1);
-        assert_eq!(config.profiles["home"].email, "home@example.com");
-        assert_eq!(config.profiles["home"].name, "Home User");
+        assert_eq!(config.len(), 1);
+        assert_eq!(config["home"].email, "home@example.com");
+        assert_eq!(config["home"].name, "Home User");
     }
 
     #[test]
@@ -68,7 +77,7 @@ mod tests {
         temp_file.write_all(toml_data.as_bytes()).unwrap();
 
         let temp_path = temp_file.path();
-        let result = Config::from_file(temp_path);
+        let result = Profiles::from_file(temp_path);
 
         assert!(result.is_err());
     }
