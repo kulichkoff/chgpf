@@ -1,15 +1,13 @@
 use std::process::exit;
 
 use chgpf::config::Profiles;
-use chgpf::config::profiles_path;
 use chgpf::get_profile_argument;
 use chgpf::git;
 
 fn main() {
     let input_profile = get_profile_argument();
 
-    let config_path = profiles_path();
-    let config = match Profiles::from_file(config_path) {
+    let config = match Profiles::from_configured() {
         Ok(conf) => conf,
         Err(_) => {
             exit(1);

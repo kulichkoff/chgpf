@@ -20,6 +20,15 @@ impl Profiles {
         let config: Profiles = toml::from_str(&conf_toml).map_err(|e| e.to_string())?;
         Ok(config)
     }
+
+    /// Loads Profiles map from config file.
+    /// It uses app's config_dir() and "profiles" directory appended.
+    ///
+    /// If you want to parse Profiles from other config file, use Profiles::from_ffle().
+    pub fn from_configured() -> Result<Profiles, String> {
+        let profiles_file_path = profiles_path();
+        Self::from_file(profiles_file_path)
+    }
 }
 
 impl Deref for Profiles {
