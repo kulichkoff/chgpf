@@ -1,7 +1,7 @@
 [package]
 name = "chgpf"
 version = "1.0.0"
-edition = "2021"
+edition = "2024"
 description = "A simple command-line tool to change Git profiles"
 authors = ["Daniel Kulichkov <danchick03@gmail.com>"]
 license = "MIT"
