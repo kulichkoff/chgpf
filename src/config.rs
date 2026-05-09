@@ -5,15 +5,15 @@ use std::{collections::HashMap, fs, path::Path};
 use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Config {
-    #[serde(flatten)]
-    pub profiles: HashMap<String, Profile>,
-}
-
-#[derive(Serialize, Deserialize, Debug)]
 pub struct Profile {
     pub email: String,
     pub name: String,
+}
+
+#[derive(Serialize, Deserialize, Debug)]
+pub struct Config {
+    #[serde(flatten)]
+    pub profiles: HashMap<String, Profile>,
 }
 
 impl Config {

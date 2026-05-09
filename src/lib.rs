@@ -1,32 +1,9 @@
 pub mod app;
 pub mod config;
+pub mod git;
 
 use std::env;
-use std::process::{exit, Command};
-
-use config::Profile;
-
-pub fn change_profile(profile: &Profile) {
-    if let Err(_) = Command::new("git")
-        .arg("config")
-        .arg("--global")
-        .arg("user.email")
-        .arg(&profile.email)
-        .status()
-    {
-        exit(1);
-    }
-
-    if let Err(_) = Command::new("git")
-        .arg("config")
-        .arg("--global")
-        .arg("user.name")
-        .arg(&profile.name)
-        .status()
-    {
-        exit(1);
-    }
-}
+use std::process::exit;
 
 pub fn get_profile_argument() -> String {
     let args: Vec<String> = env::args().collect();

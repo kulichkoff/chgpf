@@ -2,7 +2,8 @@ use std::process::exit;
 
 use chgpf::config::profiles_path;
 use chgpf::config::Config;
-use chgpf::{change_profile, get_profile_argument};
+use chgpf::get_profile_argument;
+use chgpf::git;
 
 fn main() {
     let input_profile = get_profile_argument();
@@ -22,7 +23,9 @@ fn main() {
         },
     };
 
-    change_profile(profile);
+    if git::Config::set_profile(profile).is_err() {
+        exit(1)
+    }
 
     println!("Changed git profile: {}", &profile.email);
 }
