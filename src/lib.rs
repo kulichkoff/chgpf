@@ -1,7 +1,8 @@
 pub mod config_model;
+pub mod app;
+pub mod config;
 
 use std::env;
-use std::path::PathBuf;
 use std::process::{exit, Command};
 
 use config_model::Profile;
@@ -28,17 +29,6 @@ pub fn change_profile(profile: &Profile) {
         log::error!("Failed to execute git command: {}", err);
         exit(1);
     }
-}
-
-pub fn get_config_path() -> PathBuf {
-    let home = match dirs::home_dir() {
-        Some(path) => path,
-        None => {
-            log::error!("Failed to find home directory");
-            exit(1);
-        }
-    };
-    home.join(".config").join("chgpf").join("profiles")
 }
 
 pub fn get_profile_argument() -> String {

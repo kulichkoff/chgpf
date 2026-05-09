@@ -1,7 +1,8 @@
 use std::process::exit;
 
+use chgpf::config::profiles_path;
 use chgpf::config_model::Config;
-use chgpf::{change_profile, get_config_path, get_profile_argument};
+use chgpf::{change_profile, get_profile_argument};
 
 fn main() {
     env_logger::init();
@@ -9,7 +10,7 @@ fn main() {
 
     let input_profile = get_profile_argument();
 
-    let config_path = get_config_path();
+    let config_path = profiles_path();
     let config = match Config::from_file(config_path) {
         Ok(conf) => conf,
         Err(err) => {
