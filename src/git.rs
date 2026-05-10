@@ -99,4 +99,12 @@ impl Config {
     pub fn set_profile(profile: &Profile) -> Result<(), GitError> {
         Self::set_email(&profile.email).and(Self::set_name(&profile.name))
     }
+
+    pub fn profile() -> Result<Profile, GitError> {
+        let profile = Profile {
+            email: Self::email()?,
+            name: Self::name()?,
+        };
+        Ok(profile)
+    }
 }
