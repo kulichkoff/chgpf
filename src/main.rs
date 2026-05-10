@@ -8,6 +8,17 @@ use chgpf::git;
 enum Command {
     Switch { profile: String },
     List,
+    Init,
+}
+
+impl Command {
+    fn execute(&self) -> Result<()> {
+        match self {
+            Command::Switch { profile } => switch_profile(profile),
+            Command::List => list_profiles(),
+            Command::Init => init_config(),
+        }
+    }
 }
 
 fn switch_cmd() -> impl Parser<Command> {
@@ -18,8 +29,12 @@ fn list_cmd() -> impl Parser<Command> {
     pure(Command::List).to_options().command("list")
 }
 
+fn init_cmd() -> impl Parser<Command> {
+    pure(Command::Init).to_options().command("init")
+}
+
 fn parser() -> OptionParser<Command> {
-    construct!([list_cmd(), switch_cmd(),])
+    construct!([list_cmd(), init_cmd(), switch_cmd(),])
         .to_options()
         .descr("Switch Git profiles")
 }
@@ -53,21 +68,19 @@ fn switch_profile(profile_name: &str) -> Result<()> {
     Ok(())
 }
 
+fn init_config() -> Result<()> {
+    let git_profile = git::Config::profile()?;
+    let profiles = Profiles::from(git_profile);
+    profiles.save(false)?;
+
+    Ok(())
+}
+
 fn main() {
     let cmd = parser().run();
 
-    match cmd {
-        Command::List => {
-            if let Err(err) = list_profiles() {
-                eprintln!("Error: {err:#}");
-                std::process::exit(1);
-            }
-        }
-        Command::Switch { profile } => {
-            if let Err(err) = switch_profile(&profile) {
-                eprintln!("Error: {err:#}");
-                std::process::exit(1);
-            }
-        }
-    };
+    if let Err(err) = cmd.execute() {
+        eprintln!("Error: {err:#}");
+        std::process::exit(1);
+    }
 }
