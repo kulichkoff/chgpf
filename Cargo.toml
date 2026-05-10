@@ -15,6 +15,7 @@ opt-level = "s"
 panic = "abort"
 
 [dependencies]
+bpaf = "0.9.25"
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 toml = { version = "0.8.19", default-features = false, features = ["parse"] }
 
