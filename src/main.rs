@@ -1,14 +1,14 @@
 use anyhow::{Context, Result};
 use bpaf::*;
 
-use chgpf::config::Profiles;
+use chgpf::config::{ConfigError, Profiles};
 use chgpf::git;
 
 #[derive(Debug, Clone)]
 enum Command {
     Switch { profile: String },
     List,
-    Init,
+    Init { force: bool },
 }
 
 impl Command {
@@ -16,7 +16,7 @@ impl Command {
         match self {
             Command::Switch { profile } => switch_profile(profile),
             Command::List => list_profiles(),
-            Command::Init => init_config(),
+            Command::Init { force } => init_config(*force),
         }
     }
 }
@@ -30,7 +30,13 @@ fn list_cmd() -> impl Parser<Command> {
 }
 
 fn init_cmd() -> impl Parser<Command> {
-    pure(Command::Init).to_options().command("init")
+    let force = long("force")
+        .short('f')
+        .help("Overwrite existing configuration")
+        .switch();
+    construct!(Command::Init { force })
+        .to_options()
+        .command("init")
 }
 
 fn parser() -> OptionParser<Command> {
@@ -68,10 +74,16 @@ fn switch_profile(profile_name: &str) -> Result<()> {
     Ok(())
 }
 
-fn init_config() -> Result<()> {
+fn init_config(forced: bool) -> Result<()> {
     let git_profile = git::Config::profile()?;
     let profiles = Profiles::from(git_profile);
-    profiles.save(false)?;
+    profiles.save(forced).inspect_err(|e| {
+        if let ConfigError::AlreadyExists { path: _ } = e {
+            eprintln!(
+                "If you want to rewrite existing profile, pass --force option calling chgpf init"
+            );
+        }
+    })?;
 
     Ok(())
 }
