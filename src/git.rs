@@ -36,8 +36,9 @@ impl Config {
         }
 
         let stdout = String::from_utf8(output.stdout).map_err(|_| GitError::InvalidUtf8)?;
+        let value = stdout.trim().to_string();
 
-        Ok(stdout)
+        Ok(value)
     }
 
     /// Calls git to globally set config "user.email"
@@ -73,8 +74,9 @@ impl Config {
         }
 
         let stdout = String::from_utf8(output.stdout).map_err(|_| GitError::InvalidUtf8)?;
+        let value = stdout.trim().to_string();
 
-        Ok(stdout)
+        Ok(value)
     }
 
     /// Calls git to globally set config "user.name"
