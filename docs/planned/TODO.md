@@ -17,7 +17,7 @@ This command should:
 
 ## List Available Profiles
 
-- **Status**: planned
+- **Status**: supported
 
 Profiles listing might be useful if a user has more Git configurations than usual.
 
