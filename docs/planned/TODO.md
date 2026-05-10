@@ -4,7 +4,7 @@ This document describes the features I'd like to implement within `chgpf`.
 
 ## Init Command
 
-- **Status**: planned
+- **Status**: supported
 
 ```bash
 chgpf init
