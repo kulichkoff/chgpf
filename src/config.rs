@@ -4,6 +4,19 @@ use std::path::PathBuf;
 use std::{collections::HashMap, fs, path::Path};
 
 use serde::{Deserialize, Serialize};
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+pub enum ConfigError {
+    #[error("config file not found: {0}")]
+    NotFound(String),
+
+    #[error("invalid config format")]
+    InvalidFormat,
+
+    #[error("io error")]
+    Io(#[from] std::io::Error),
+}
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Profile {
@@ -15,9 +28,15 @@ pub struct Profile {
 pub struct Profiles(HashMap<String, Profile>);
 
 impl Profiles {
-    pub fn from_file<P: AsRef<Path>>(p: P) -> Result<Profiles, String> {
-        let conf_toml = fs::read_to_string(p).map_err(|e| e.to_string())?;
-        let config: Profiles = toml::from_str(&conf_toml).map_err(|e| e.to_string())?;
+    pub fn from_file<P: AsRef<Path>>(p: P) -> Result<Profiles, ConfigError> {
+        let conf_toml = fs::read_to_string(&p).map_err(|e| match e.kind() {
+            std::io::ErrorKind::NotFound => {
+                ConfigError::NotFound(String::from(p.as_ref().to_str().unwrap()))
+            }
+            _ => ConfigError::Io(e),
+        })?;
+        let config: Profiles =
+            toml::from_str(&conf_toml).map_err(|_| ConfigError::InvalidFormat)?;
         Ok(config)
     }
 
@@ -25,7 +44,7 @@ impl Profiles {
     /// It uses app's config_dir() and "profiles" directory appended.
     ///
     /// If you want to parse Profiles from other config file, use Profiles::from_ffle().
-    pub fn from_configured() -> Result<Profiles, String> {
+    pub fn from_configured() -> Result<Profiles, ConfigError> {
         let profiles_file_path = profiles_path();
         Self::from_file(profiles_file_path)
     }

@@ -1,5 +1,5 @@
+use anyhow::{Context, Result};
 use bpaf::*;
-use std::process::exit;
 
 use chgpf::config::Profiles;
 use chgpf::git;
@@ -24,44 +24,50 @@ fn parser() -> OptionParser<Command> {
         .descr("Switch Git profiles")
 }
 
+fn list_profiles() -> Result<()> {
+    let profiles = Profiles::from_configured()?;
+    let mut first = true;
+    for (profile_name, profile) in profiles.iter() {
+        if !first {
+            println!("---------");
+        }
+        first = false;
+        println!("[{}]", profile_name);
+        let profile_str = toml::to_string_pretty(profile)?;
+        print!("{}", profile_str);
+    }
+    Ok(())
+}
+
+fn switch_profile(profile_name: &str) -> Result<()> {
+    let profiles = Profiles::from_configured()?;
+
+    let profile = profiles
+        .get(profile_name)
+        .context("profile with this name does not exist")?;
+
+    git::Config::set_profile(profile)?;
+
+    println!("Switched: {}", &profile.email);
+
+    Ok(())
+}
+
 fn main() {
     let cmd = parser().run();
 
     match cmd {
         Command::List => {
-            // TODO: handle errors better
-            let profiles = Profiles::from_configured().unwrap();
-            let mut first = true;
-            for (profile_name, profile) in profiles.iter() {
-                if !first {
-                    println!("---------")
-                }
-                first = false;
-                println!("[{}]", profile_name);
-                let profile_str = toml::to_string_pretty(profile).unwrap();
-                print!("{}", profile_str);
+            if let Err(err) = list_profiles() {
+                eprintln!("Error: {err:#}");
+                std::process::exit(1);
             }
-        },
+        }
         Command::Switch { profile } => {
-            let profiles = match Profiles::from_configured() {
-                Ok(conf) => conf,
-                Err(_) => {
-                    exit(1);
-                }
-            };
-
-            let profile = match profiles.get(&profile) {
-                Some(prof) => prof,
-                None => {
-                    exit(1);
-                }
-            };
-
-            if git::Config::set_profile(profile).is_err() {
-                exit(1)
+            if let Err(err) = switch_profile(&profile) {
+                eprintln!("Error: {err:#}");
+                std::process::exit(1);
             }
-
-            println!("Switched: {}", &profile.email);
         }
     };
 }
