@@ -28,16 +28,29 @@ fn main() {
     let cmd = parser().run();
 
     match cmd {
-        Command::List => todo!(),
+        Command::List => {
+            // TODO: handle errors better
+            let profiles = Profiles::from_configured().unwrap();
+            let mut first = true;
+            for (profile_name, profile) in profiles.iter() {
+                if !first {
+                    println!("---------")
+                }
+                first = false;
+                println!("[{}]", profile_name);
+                let profile_str = toml::to_string_pretty(profile).unwrap();
+                print!("{}", profile_str);
+            }
+        },
         Command::Switch { profile } => {
-            let config = match Profiles::from_configured() {
+            let profiles = match Profiles::from_configured() {
                 Ok(conf) => conf,
                 Err(_) => {
                     exit(1);
                 }
             };
 
-            let profile = match config.get(&profile) {
+            let profile = match profiles.get(&profile) {
                 Some(prof) => prof,
                 None => {
                     exit(1);
