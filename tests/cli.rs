@@ -114,3 +114,74 @@ fn init_twice_or_force() {
 
     fixture.assert().success();
 }
+
+#[test]
+#[serial]
+fn switch_with_existing_profile() {
+    let test_env = common::TestEnv::new();
+
+    test_env.write_profiles(
+        "
+        [home]
+        name = \"Daniel Kulichkov\"
+        email = \"danchick03@gmail.com\"
+
+        [test]
+        name = \"Daniel Kulichkov\"
+        email = \"dxack@yandex.ru\"
+
+        [itshamans]
+        name = \"IT Shaman\"
+        email = \"shaman@itshamans.team\"
+        ",
+    );
+
+    let mut fixture = test_env.cmd();
+    fixture.arg("itshamans");
+    fixture.assert().success();
+
+    let git_email = test_env.git_email();
+    assert_eq!(git_email, "shaman@itshamans.team");
+
+    let mut fixture = test_env.cmd();
+    fixture.arg("home");
+    fixture.assert().success();
+
+    let git_email = test_env.git_email();
+    assert_eq!(git_email, "danchick03@gmail.com");
+}
+
+#[test]
+#[serial]
+fn switch_ghost_profile() {
+    let test_env = common::TestEnv::new();
+
+    test_env.write_profiles(
+        "
+        [home]
+        name = \"Daniel Kulichkov\"
+        email = \"danchick03@gmail.com\"
+        ",
+    );
+
+    let mut fixture = test_env.cmd();
+    fixture.arg("itshamans");
+    fixture
+        .assert()
+        .failure()
+        .stderr("Error: profile with this name does not exist\n");
+}
+
+#[test]
+#[serial]
+fn switch_no_config_exits_non_zero() {
+    let test_env = common::TestEnv::new();
+
+    let mut fixture = test_env.cmd();
+    fixture.arg("itshamans");
+    let expected_err = format!(
+        "Error: config file not found: {}\n",
+        profiles_path(&test_env).to_str().unwrap()
+    );
+    fixture.assert().failure().stderr(expected_err);
+}
