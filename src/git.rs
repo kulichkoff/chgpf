@@ -1,4 +1,7 @@
-use std::process::{Command, ExitStatus};
+use std::{
+    ffi::OsStr,
+    process::{Command, ExitStatus, Output},
+};
 use thiserror::Error;
 
 use crate::config::Profile;
@@ -18,23 +21,28 @@ pub enum GitError {
     InvalidUtf8,
 }
 
+fn run_git<I: IntoIterator<Item = S>, S: AsRef<OsStr>>(args: I) -> Result<Output, GitError> {
+    let output = Command::new("git")
+        .args(args)
+        .output()
+        .map_err(|e| GitError::Spawn { source: e })?;
+
+    if !output.status.success() {
+        let stderr = String::from_utf8(output.stderr).map_err(|_| GitError::InvalidUtf8)?;
+        return Err(GitError::Failed {
+            status: output.status,
+            stderr,
+        });
+    }
+
+    Ok(output)
+}
+
 pub struct Config;
 
 impl Config {
     pub fn email() -> Result<String, GitError> {
-        let output = Command::new("git")
-            .args(["config", "--global", "user.email"])
-            .output()
-            .map_err(|e| GitError::Spawn { source: e })?;
-
-        if !output.status.success() {
-            let stderr = String::from_utf8(output.stderr).map_err(|_| GitError::InvalidUtf8)?;
-            return Err(GitError::Failed {
-                status: output.status,
-                stderr,
-            });
-        }
-
+        let output = run_git(["config", "--global", "user.email"])?;
         let stdout = String::from_utf8(output.stdout).map_err(|_| GitError::InvalidUtf8)?;
         let value = stdout.trim().to_string();
 
@@ -43,36 +51,13 @@ impl Config {
 
     /// Calls git to globally set config "user.email"
     pub fn set_email(email: &str) -> Result<(), GitError> {
-        let output = Command::new("git")
-            .args(["config", "--global", "user.email", email])
-            .output()
-            .map_err(|e| GitError::Spawn { source: e })?;
-
-        if !output.status.success() {
-            let stderr = String::from_utf8(output.stderr).map_err(|_| GitError::InvalidUtf8)?;
-            return Err(GitError::Failed {
-                status: output.status,
-                stderr,
-            });
-        }
+        run_git(["config", "--global", "user.email", email])?;
 
         Ok(())
     }
 
     pub fn name() -> Result<String, GitError> {
-        let output = Command::new("git")
-            .args(["config", "--global", "user.name"])
-            .output()
-            .map_err(|e| GitError::Spawn { source: e })?;
-
-        if !output.status.success() {
-            let stderr = String::from_utf8(output.stderr).map_err(|_| GitError::InvalidUtf8)?;
-            return Err(GitError::Failed {
-                status: output.status,
-                stderr,
-            });
-        }
-
+        let output = run_git(["config", "--global", "user.name"])?;
         let stdout = String::from_utf8(output.stdout).map_err(|_| GitError::InvalidUtf8)?;
         let value = stdout.trim().to_string();
 
@@ -81,18 +66,7 @@ impl Config {
 
     /// Calls git to globally set config "user.name"
     pub fn set_name(name: &str) -> Result<(), GitError> {
-        let output = Command::new("git")
-            .args(["config", "--global", "user.name", name])
-            .output()
-            .map_err(|e| GitError::Spawn { source: e })?;
-
-        if !output.status.success() {
-            let stderr = String::from_utf8(output.stderr).map_err(|_| GitError::InvalidUtf8)?;
-            return Err(GitError::Failed {
-                status: output.status,
-                stderr,
-            });
-        }
+        run_git(["config", "--global", "user.name", name])?;
 
         Ok(())
     }
