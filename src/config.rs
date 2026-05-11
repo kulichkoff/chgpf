@@ -1,7 +1,7 @@
 use crate::app;
 use std::ops::{Deref, DerefMut};
 use std::path::PathBuf;
-use std::{collections::HashMap, fs, path::Path};
+use std::{collections::BTreeMap, fs, path::Path};
 
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
@@ -28,11 +28,11 @@ pub struct Profile {
 }
 
 #[derive(Serialize, Deserialize, Debug)]
-pub struct Profiles(HashMap<String, Profile>);
+pub struct Profiles(BTreeMap<String, Profile>);
 
 impl Profiles {
     pub fn new() -> Profiles {
-        let hash_map = HashMap::new();
+        let hash_map = BTreeMap::new();
         Profiles(hash_map)
     }
     pub fn from_file<P: AsRef<Path>>(p: P) -> Result<Profiles, ConfigError> {
@@ -93,7 +93,7 @@ impl From<Profile> for Profiles {
 }
 
 impl Deref for Profiles {
-    type Target = HashMap<String, Profile>;
+    type Target = BTreeMap<String, Profile>;
 
     fn deref(&self) -> &Self::Target {
         &self.0
