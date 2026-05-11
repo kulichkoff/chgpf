@@ -6,7 +6,7 @@ It is a thin wrapper around Git config, a simple command-line tool to change Git
 
 ## Table of Contents
 
-- [Short Explanation](<README#Short Explanation>)
+- [Short Explanation](#short-explanation)
 - [Installation](#installation)
 - [Usage](#usage)
 - [Configuration](#configuration)
