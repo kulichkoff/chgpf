@@ -125,7 +125,7 @@ mod tests {
     use tempfile::NamedTempFile;
 
     #[test]
-    fn test_config_parse() {
+    fn from_file_parses_single_profile() {
         let toml_data = r#"
             [home]
             email = "home@example.com"
@@ -144,7 +144,32 @@ mod tests {
     }
 
     #[test]
-    fn test_invalid_config() {
+    fn from_file_parses_multiple_profiles() {
+        let toml_data = r#"
+            [home]
+            email = "home@example.com"
+            name = "Home User"
+
+            [test]
+            email = "test@example.com"
+            name = "Test Test"
+        "#;
+
+        let mut temp_file = NamedTempFile::new().unwrap();
+        temp_file.write_all(toml_data.as_bytes()).unwrap();
+
+        let temp_path = temp_file.path();
+        let config = Profiles::from_file(temp_path).unwrap();
+
+        assert_eq!(config.len(), 2);
+        assert_eq!(config["home"].email, "home@example.com");
+        assert_eq!(config["home"].name, "Home User");
+        assert_eq!(config["test"].email, "test@example.com");
+        assert_eq!(config["test"].name, "Test Test");
+    }
+
+    #[test]
+    fn from_file_fails_invalid_format() {
         let toml_data = r#"
             [home
             email = "home@example.com"
@@ -157,6 +182,35 @@ mod tests {
         let temp_path = temp_file.path();
         let result = Profiles::from_file(temp_path);
 
-        assert!(result.is_err());
+        assert!(matches!(result, Err(ConfigError::InvalidFormat)));
+    }
+
+    #[test]
+    fn from_file_fails_no_fields() {
+        let toml_data = r#"
+            [home]
+            name = "Home User"
+        "#;
+
+        let mut temp_file = NamedTempFile::new().unwrap();
+        temp_file.write_all(toml_data.as_bytes()).unwrap();
+
+        let temp_path = temp_file.path();
+        let result = Profiles::from_file(temp_path);
+
+        assert!(matches!(result, Err(ConfigError::InvalidFormat)));
+
+        let toml_data = r#"
+            [home]
+            email = "email@example.com"
+        "#;
+
+        let mut temp_file = NamedTempFile::new().unwrap();
+        temp_file.write_all(toml_data.as_bytes()).unwrap();
+
+        let temp_path = temp_file.path();
+        let result = Profiles::from_file(temp_path);
+
+        assert!(matches!(result, Err(ConfigError::InvalidFormat)));
     }
 }
