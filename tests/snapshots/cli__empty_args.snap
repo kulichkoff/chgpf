@@ -1,0 +1,5 @@
+---
+source: tests/cli.rs
+expression: err_str
+---
+Error: expected `COMMAND ...` or `PROFILE`, pass `--help` for usage information

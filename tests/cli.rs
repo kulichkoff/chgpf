@@ -13,3 +13,17 @@ fn help_flag() {
 
     insta::assert_snapshot!(out_str);
 }
+
+#[test]
+#[serial]
+fn empty_args() {
+    let test_env = common::TestEnv::new();
+    let mut fixture = test_env.cmd();
+
+    let output = fixture.assert().failure().get_output().clone();
+    let out_str = String::from_utf8(output.stdout).unwrap();
+    assert!(out_str.is_empty());
+    let err_str = String::from_utf8(output.stderr).unwrap();
+
+    insta::assert_snapshot!(err_str);
+}
