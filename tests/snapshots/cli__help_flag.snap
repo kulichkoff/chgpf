@@ -1,0 +1,14 @@
+---
+source: tests/cli.rs
+expression: out_str
+---
+Switch Git profiles
+
+Usage: chgpf (COMMAND ... | PROFILE)
+
+Available options:
+    -h, --help  Prints help information
+
+Available commands:
+    list
+    init
