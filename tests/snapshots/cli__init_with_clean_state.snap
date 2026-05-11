@@ -1,0 +1,7 @@
+---
+source: tests/cli.rs
+expression: profiles
+---
+[default]
+email = "danchick03@gmail.com"
+name = "Daniel Kulichkov"
