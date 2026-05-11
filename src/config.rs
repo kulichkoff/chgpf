@@ -60,20 +60,28 @@ impl Profiles {
     /// It may throw ConfigError::AlreadyExists if profiles config file is located.
     /// To skip the existance check, pass rewrite as true. It is better to ask user if they
     /// really wish to rewrite the existing config.
-    pub fn save(&self, rewrite: bool) -> Result<(), ConfigError> {
-        let config_dir = app::config_dir();
-        fs::create_dir_all(config_dir)?;
+    pub fn save_to(&self, to_file: &PathBuf, rewrite: bool) -> Result<(), ConfigError> {
+        fs::create_dir_all(to_file.parent().unwrap_or(PathBuf::default().as_path()))?;
 
-        let profiles_config_path = profiles_path();
-        if !rewrite && fs::exists(&profiles_config_path)? {
+        if !rewrite && fs::exists(to_file)? {
             return Err(ConfigError::AlreadyExists {
-                path: profiles_config_path,
+                path: to_file.clone(),
             });
         }
 
         let profiles_str = toml::to_string_pretty(self).map_err(|_| ConfigError::InvalidFormat)?;
-        fs::write(profiles_config_path, profiles_str)?;
+        fs::write(to_file, profiles_str)?;
 
+        Ok(())
+    }
+
+    /// # Errors
+    /// It may throw ConfigError::AlreadyExists if profiles config file is located.
+    /// To skip the existance check, pass rewrite as true. It is better to ask user if they
+    /// really wish to rewrite the existing config.
+    pub fn save(&self, rewrite: bool) -> Result<(), ConfigError> {
+        let profiles_config_path = profiles_path();
+        self.save_to(&profiles_config_path, rewrite)?;
         Ok(())
     }
 }
