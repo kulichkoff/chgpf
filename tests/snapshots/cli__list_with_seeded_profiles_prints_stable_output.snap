@@ -1,0 +1,15 @@
+---
+source: tests/cli.rs
+expression: out_str
+---
+[home]
+email = "danchick03@gmail.com"
+name = "Daniel Kulichkov"
+---------
+[itshamans]
+email = "shaman@itshamans.team"
+name = "IT Shaman"
+---------
+[test]
+email = "dxack@yandex.ru"
+name = "Daniel Kulichkov"

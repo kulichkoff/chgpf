@@ -18,8 +18,10 @@ impl TestEnv {
         let dir = tempdir().unwrap();
 
         let home = dir.path();
-        let xdg = home.join(".testconfig");
+        let xdg = home.join(".config");
         let git_config = home.join(".gitconfig");
+
+        fs::create_dir_all(&xdg.join("chgpf")).unwrap();
 
         let git_config_contents = "[user]
 email = danchick03@gmail.com
@@ -44,7 +46,8 @@ name = Daniel Kulichkov";
     }
 
     pub fn write_profiles(&self, toml: &str) {
-        fs::write(&self.git_config, toml).unwrap();
+        let profiles_path = self.xdg.join("chgpf").join("profiles");
+        fs::write(profiles_path, toml).unwrap();
     }
 
     pub fn git_email(&self) -> String {
